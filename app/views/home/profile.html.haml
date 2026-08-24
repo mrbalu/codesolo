@@ -1,0 +1,37 @@
+.block
+  .content
+    .inner
+      - if @user
+        - unless @projects.empty?
+          = render :partial => "projects/list"
+        - else
+          No projects.
+      - elsif @tag
+        %h2.title ##{@tag.name}
+        - for project in @tag.projects
+          %p= link_to project.name, project
+      - else
+        #{params[:login]} is avaiable, wanna register it ?
+
+- content_for :sidebar do
+  .block
+    - if @user
+      %h2= @user.name
+      = link_to "Options", "/options" if @user == current_user
+      - if current_user && current_user.admin?
+        = link_to "Users", "/users"
+        = link_to "Tags", "/tags"
+
+      .gray= @user.motto
+    - if current_user == @user
+      %ul
+        %li
+          = image_tag "plus.png"
+          = link_to 'New project!', new_project_path
+    - elsif @user
+      %ul
+        %li
+          = image_tag "icons/pin.png"
+          = link_to 'Follow user!', follow_user_path(@user)
+
+

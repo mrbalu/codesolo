@@ -1,0 +1,57 @@
+- content_for :foot do
+  =# javascript_include_tag "location"
+
+.block
+  .content
+    %h2.title I want to:
+    .inner.form
+      .left
+        .msearch
+          - form_tag "/search", :method => 'get' do
+            = text_field_tag :q, 'Play with...', :id => :search
+      .right
+        = image_tag "magnifier.png"
+        or
+        %strong= link_to "Register new!", new_project_path
+    .clear
+    .inner= tag_cloud
+
+.block
+  .content
+    %h2.title Spotlight
+    .inner.form
+    .inner
+      - unless @all.empty?
+        %ol
+          - for item in @all
+            %li.pub_item.latest
+              = link_to item.name, item
+              (#{skill_text(item.skill)} - #{item.devs})
+              %span.gray #{item.info}
+              = show_tags(item)
+      - else
+        No projects?
+
+
+- content_for :sidebar do
+  .block.notice
+    %h4
+      Solo?
+    %p= t('solo.intro')
+  .block
+    - if current_user
+      %h3= link_to "My projects", "/profile"
+      %ul.navigation
+        %li= link_to "Register new project!", new_project_path
+        - for project in current_user.projects
+          %li= link_to project.name, project
+      %h3= link_to "New projects", "/projects"
+      %ul.navigation
+        - for project in Project.last_ones
+          %li= link_to project.name, project
+      -# %table.user_grid
+      -#  current_user.projects.each_slice(5) do |slice|
+      -#   %tr
+      -#     - for project in slice
+      -#       = link_to image_tag(project.avatar.url(:tiny)), project
+

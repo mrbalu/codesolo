@@ -1,0 +1,57 @@
+- content_for :head do
+  = javascript_include_tag "app/project"
+
+.block
+  .content
+    %h2.title= @project.name
+    .inner
+      %p= @project.info
+      %strong= link_to @project.url, @project.url
+      .gray= @project.users.map(&:name).join(",")
+
+      %h3 Talks
+      - if current_user
+        - form_for Pub.new do |f|
+          = f.hidden_field :project_id, :value => @project.id
+          = f.text_field :body, :autocompletion => :off
+          = f.submit "Send"
+      - else
+        Log in to chat.
+
+      - for pub in @project.pubs
+        %p= puts_pub(pub)
+
+- content_for :sidebar do
+  - content_tag_for :div, @project do
+    %ul
+      %li
+        %span.pplwork=h @project.devs
+        dev(s)
+      %li
+        %strong= skill_text(@project.skill)
+      %li
+        %strong= @project.karma
+        Karma,
+        %strong= @project.forks
+        Forks,
+        %strong= @project.watchers
+        Watchers
+
+    .block
+      %h3= link_to "Todos (#{@project.todos.count})", @project.issues
+      .content
+        %ol
+          - for todo in @project.todos
+            %li= todo.name
+
+    .block
+
+      %h3 Tags
+      .content= @project.tags.empty? ? "No tags, add some!" : show_tags(@project)
+
+      = render "sendmail"
+
+  %ul
+    - if current_user && (current_user.admin? || current_user.owns?(@project))
+      %li= link_to 'Edit', edit_project_path(@project)
+    %li= link_to 'Back', projects_path

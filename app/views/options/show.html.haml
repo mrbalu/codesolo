@@ -1,0 +1,43 @@
+.block
+  .content
+    %h2.title Options
+    .inner
+      - form_for @user, :url => { :action => "update" }, :html => {:multipart => true, :class => "form"} do |f|
+        = f.error_messages
+        .left
+          .group
+            = f.label :name
+            = f.text_field :name
+          .group
+            = f.label :email
+            = f.text_field :email
+          .group
+            = f.label :motto
+            = f.text_field :motto
+          .group
+            = f.label :password
+            = f.password_field :password, :autocomplete => :off
+          .group
+            = f.label :password_confirmation
+            = f.password_field :password_confirmation
+          .group
+            = f.label :time_zone
+            = f.time_zone_select :time_zone, /Brasilia/
+          .group
+            = f.label "Avatar"
+            = f.file_field :avatar
+        .right
+          .group
+            = f.label :language_select
+            = language_select
+          .group= skill_select(f)
+        .clear
+        = save_or_cancel(f)
+
+
+- content_for :sidebar do
+  .block
+    %h3= @user.login
+    %ul.navigation
+      = image_tag @user.avatar.url(:medium) if @user.avatar
+      %li= link_to current_user.email, "/options"
